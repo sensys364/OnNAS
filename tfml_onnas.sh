@@ -70,7 +70,7 @@ args=(
     --naivenaive 0
     --naivesample 0
     --cell_phase 3
-    --residual_flag 1
+    --residual_flag 0
     --beta_sampling 0
     --eval_switch 0
     --alpha_expect 1

@@ -64,7 +64,7 @@ mkdir -p $TRAIN_DIR
         --beta_sampling 0
         --eval_switch 0
         --alpha_expect 1
-        --split_num 1
+        --split_num 5
         --w_lr 0.025
         --exp_name CIFAR
         
