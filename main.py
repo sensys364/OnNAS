@@ -954,7 +954,7 @@ if __name__ == "__main__":
         "--wandb",
         type=int,
         default=0,
-        help="we cannot run exp runs all time..."
+        help=""
     )
     parser.add_argument(
         "--wandb_name",
@@ -1097,7 +1097,7 @@ if __name__ == "__main__":
         "--split_num",
         type = int,
         default=1,
-        help="how much chunks we want to make? "
+        help="how much chunks we want to make for the gradient accumulation? "
     )
     parser.add_argument(
         "--loss_track",
@@ -1133,7 +1133,7 @@ if __name__ == "__main__":
         "--exp_name",
         type = str,
         default = None,
-        help="stop finding simple memory call bro."
+       
     )
     parser.add_argument(
         "--step_by_step",
