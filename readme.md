@@ -1,5 +1,5 @@
 # [Sensys 2023 # 364] On-NAS: On-Device Neural Architecture Search on Memory-Constrained Intelligent Embedded Systems
-The source paper is currently in the review process.
+The source paper is currently under the review process.
 
 ## Introduction
 
