@@ -47,7 +47,6 @@ def main(config):
     # get data with meta info
     input_size, input_channels, n_classes, train_data = utils.get_data(
         config.dataset, config.data_path, cutout_length=0, validation=False)
-    # we get data here, so lets put get data func to utils file of ours. 
     _,_,_,_,test_data = utils.get_data(config.dataset, config.data_path, cutout_length=0, validation=True)
 
 
@@ -110,7 +109,6 @@ def main(config):
     alpha_optim = torch.optim.Adam(model.alphas(), config.alpha_lr, betas=(0.0, 0.999),
                                    weight_decay=config.alpha_weight_decay)
     
-    # adapt above parts to my case, metanas case. without meta-learning.
 
     # split data to train/validation
     n_train = len(train_data)
