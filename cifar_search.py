@@ -62,6 +62,7 @@ def main(config):
     )
     
     net_crit = nn.CrossEntropyLoss().to(device)
+    
     model = SearchCNNController(           
             3,
             config.init_channels,
@@ -136,7 +137,6 @@ def main(config):
                                               pin_memory=True)
     
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(w_optim, config.epochs, eta_min=0.0)
-    
     architect = Architect(model, config.w_momentum, config.w_weight_decay, use_first_order_darts=True)
 
     # training loop
@@ -148,17 +148,36 @@ def main(config):
     import copy
 
     warm_up_flag = False 
+    epoch_avg = pd.DataFrame()
     for epoch in tqdm(range(config.epochs),total=config.epochs):
+        mem = torch.cuda.memory_stats(0)['allocated_bytes.all.peak']/(1024**2)
+
         config.epoch_score = []
         lr = lr_scheduler.get_last_lr()[0]
+
         # training
         loader_chunk = Loader_Chunk(train_loader,valid_loader)
+        
         if epoch < config.warm_up_epochs:
             warm_up_flag = True
+            
+            
+        #a = list(self.parameters())[0].clone()
+        # loss.backward()
+        # self.optimizer.step()
+        # b = list(self.parameters())[0].clone()
+        # torch.equal(a.data, b.data)
         d_train(loader_chunk,model,architect,w_optim,alpha_optim,config.w_lr,global_progress,config,warm_up=warm_up_flag)
+        
         # validation
         cur_step = (epoch+1) * len(train_loader)
 
+        if epoch % 1 == 0: 
+            val_switch(config,"before")
+            top1 = validate(test_loader, model, epoch, cur_step, config)
+            val_switch(config,"after")
+            
+            data = {"average":np.mean(config.epoch_score),"memory": mem}
         lr_scheduler.step()
 
         # log
@@ -169,7 +188,19 @@ def main(config):
         plot_path = os.path.join(config.plot_path, "EP{:02d}".format(epoch+1))
         caption = "Epoch {}".format(epoch+1)
    
+        # save
+        if best_top1 < top1:
+            best_top1 = top1
+            best_genotype = genotype
+            is_best = True
+        else:
+            is_best = False
+        utils.save_checkpoint(model, config.path, is_best)
+    end_time = time.process_time()-start_time
+    times = pd.DataFrame([end_time])
+    times.to_csv(f"./cifarsearch/{config.layers}_{config.exp_name}_non_trained_{config.sampleno}_sampled_warmup_{config.warm_up_epochs}_alpha_{config.alpha_expect}_lr_{config.w_lr}.csv",mode='a',index=False,header=False)
 
+    torch.save(model.genotype(),f"genotype_{config.exp_name}.pt")
     
     
 
@@ -182,8 +213,7 @@ def val_switch(config,b_or_f):
         config.naivenaive = 0 
         config.eval_switch = 0
         config.cell_phase = 3 
-
-
+        
 
 def validate(valid_loader, model, epoch, cur_step, config):
     
