@@ -684,7 +684,6 @@ if __name__ == "__main__":
         "--grad_acc",
         type = int,
         default=None,
-        help="how crude this code is "
     )
     
     parser.add_argument(
@@ -701,12 +700,6 @@ if __name__ == "__main__":
         help="tracking losses, are they learning? "
     )
  
-    parser.add_argument(
-        "--loss_val_track",
-        type = list,
-        default= [],
-        help="tracking val losses, are they learning? "
-    )
     
     parser.add_argument(
         "--computing_time",
